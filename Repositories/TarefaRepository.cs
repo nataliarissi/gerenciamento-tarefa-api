@@ -17,10 +17,10 @@ namespace GerenciamentoTarefaAPI.Repositories
             _connectionString = "Data Source=.;Initial Catalog=GerenciamentoTarefa;User ID=sa;Password=Natalia@123";
         }
 
-        public bool CadastrarTarefa(Tarefa tarefa)
+        public bool CadastrarTarefa(TarefaCadastro tarefaCadastro)
         {
-            string inserirDados = @"Insert into [BancoDados].[dbo].[TAREFA] ([ID], [TITULO], [DESCRICAO], [DATACRIACAO], [STATUS]) 
-            values (@Id, @Titulo, @Descricao, @DataCriacao, @StatusTarefa)";
+            string inserirDados = @"Insert into [GerenciamentoTarefa].[dbo].[TAREFA] ([TITULO], [DESCRICAO], [DATACRIACAO], [STATUS]) 
+            values (@Titulo, @Descricao, @DataCriacao, @StatusTarefa)";
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString))
             {
@@ -29,11 +29,10 @@ namespace GerenciamentoTarefaAPI.Repositories
                 var tarefaResultado = dbConnection.Execute(inserirDados,
                     new
                     {
-                        Id = tarefa.Id,
-                        Titulo = tarefa.Titulo,
-                        Descricao = tarefa.Descricao,
-                        DataCriacao = tarefa.DataCriacao,
-                        StatusTarefa = tarefa.Status
+                        Titulo = tarefaCadastro.Titulo,
+                        Descricao = tarefaCadastro.Descricao,
+                        DataCriacao = tarefaCadastro.DataCriacao,
+                        StatusTarefa = tarefaCadastro.Status
                     });
                 
                     dbConnection.Close();
@@ -44,7 +43,7 @@ namespace GerenciamentoTarefaAPI.Repositories
 
         public bool DeletarTarefa(int id)
         {
-            string inserirDados = "Delete [BancoDados].[dbo].[TAREFA] where [ID] = @Id;";
+            string inserirDados = "Delete [GerenciamentoTarefa].[dbo].[TAREFA] where [ID] = @Id;";
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
 
                 dbConnection.Open();
@@ -62,7 +61,7 @@ namespace GerenciamentoTarefaAPI.Repositories
 
         public bool EditarTarefa(Tarefa tarefa)
         {
-            string inserirDados = @"UPDATE [BancoDados].[dbo].[TAREFA] SET [TITULO] = @Titulo, [DESCRICAO] = @Descricao, [DATACRIACAO] = @DataCriacao, [STATUS] = @StatusTarefa
+            string inserirDados = @"UPDATE [GerenciamentoTarefa].[dbo].[TAREFA] SET [TITULO] = @Titulo, [DESCRICAO] = @Descricao, [DATACRIACAO] = @DataCriacao, [STATUS] = @StatusTarefa
             WHERE [ID] = @Id;";
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
@@ -85,9 +84,9 @@ namespace GerenciamentoTarefaAPI.Repositories
             }
         }
 
-        public Tarefa VisualizarTarefa(int id)
+        public Tarefa? VisualizarTarefa(int id)
         {
-            string inserirDados = "select * from [BancoDados].[dbo].[TAREFA] where [ID] = @Id;";
+            string inserirDados = "select * from [GerenciamentoTarefa].[dbo].[TAREFA] where [ID] = @Id;";
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
             
@@ -110,7 +109,7 @@ namespace GerenciamentoTarefaAPI.Repositories
 
         public List<Tarefa> VisualizarTodasTarefas()
         {
-            string inserirDados = "select * from [BancoDados].[dbo].[TAREFA]";
+            string inserirDados = "select * from [GerenciamentoTarefa].[dbo].[TAREFA]";
             
             List<Tarefa> listaTarefa = new List<Tarefa>();
 
@@ -123,6 +122,15 @@ namespace GerenciamentoTarefaAPI.Repositories
                 dbConnection.Close();
 
                 return resultado.ToList();
+            }
+        }
+
+        public Tarefa? PesquisarTarefaTitulo(string titulo){
+            string pesquisarQuery = "select * from [GerenciamentoTarefa].[dbo].[TAREFA] WHERE [TITULO] = @Titulo;";
+            
+            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
+            {
+                return dbConnection.QueryFirstOrDefault<Tarefa>(pesquisarQuery, new {titulo});
             }
         }
     }

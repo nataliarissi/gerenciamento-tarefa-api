@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GerenciamentoTarefaAPI.Models;
+using GerenciamentoTarefaAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,36 +14,41 @@ namespace GerenciamentoTarefaAPI.Controllers
     [Route("tarefas")]
     public class TarefasController : Controller
     {
-        private readonly ILogger<TarefasController> _logger;
+        private readonly ITarefaRepository _tarefaRepository;
 
-        public TarefasController(ILogger<TarefasController> logger)
+        public TarefasController(ITarefaRepository tarefaRepository)
         {
-            _logger = logger;
+            _tarefaRepository = tarefaRepository;
         }
 
         [HttpPost("cadastrarTarefa")]
-        public bool CadastrarTarefa(Tarefa tarefa){
-            return true;
+        public bool CadastrarTarefa([FromBody]TarefaCadastro tarefaCadastro){
+            return _tarefaRepository.CadastrarTarefa(tarefaCadastro);
         }
 
         [HttpGet("visualizarTarefa")]
         public Tarefa VisualizarTarefa(int id){
-            return null;
+            return _tarefaRepository.VisualizarTarefa(id);
         }
 
         [HttpPut("editarTarefa")]
-        public bool EditarTarefa(Tarefa tarefa){
-            return false;
+        public bool EditarTarefa([FromBody]Tarefa tarefa){
+            return _tarefaRepository.EditarTarefa(tarefa);
         }
 
         [HttpDelete("deletarTarefa")]
-        public bool DeletarTarefa(int id){
-            return true;
+        public bool DeletarTarefa([FromBody]int id){
+            return _tarefaRepository.DeletarTarefa(id);
         }
 
         [HttpGet("visualizarTodasTarefas")]
         public List<Tarefa> VisualizarTodasTarefas(){
-            return null;
+            return _tarefaRepository.VisualizarTodasTarefas();
+        }
+
+        [HttpGet("pesquisarTituloTarefa")]
+        public Tarefa? PesquisarTarefaTitulo(string titulo){
+            return _tarefaRepository.PesquisarTarefaTitulo(titulo);
         }
     }
-}  
+}
