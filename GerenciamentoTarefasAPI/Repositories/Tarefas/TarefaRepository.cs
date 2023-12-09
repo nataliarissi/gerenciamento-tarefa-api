@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using GerenciamentoTarefaAPI.Models;
 
-namespace GerenciamentoTarefaAPI.Repositories
+namespace GerenciamentoTarefaAPI.Repositories.Tarefas
 {
     public class TarefaRepository : ITarefaRepository
     {

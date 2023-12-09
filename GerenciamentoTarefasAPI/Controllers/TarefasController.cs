@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GerenciamentoTarefaAPI.Models;
 using GerenciamentoTarefaAPI.Repositories;
+using GerenciamentoTarefaAPI.Repositories.Tarefas;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
