@@ -13,8 +13,8 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
     {
         private string _connectionString { get; set; }
 
-        public TarefaRepository(){
-            _connectionString = "Data Source=.;Initial Catalog=GerenciamentoTarefa;User ID=sa;Password=Natalia@123";
+        public TarefaRepository(IConfiguration configuration){
+            _connectionString = configuration.GetConnectionString("GerenciamentoTarefa");
         }
 
         public bool CadastrarTarefa(TarefaCadastro tarefaCadastro)
@@ -24,8 +24,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString))
             {
-                dbConnection.Open();  
-
                 var tarefaResultado = dbConnection.Execute(inserirDados,
                     new
                     {
@@ -35,8 +33,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
                         StatusTarefa = tarefaCadastro.Status
                     });
                 
-                    dbConnection.Close();
-
                     return tarefaResultado > 0;
             }
         }  
@@ -46,15 +42,12 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
             string inserirDados = "Delete [GerenciamentoTarefa].[dbo].[TAREFA] where [ID] = @Id;";
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
 
-                dbConnection.Open();
-
                 var tarefaResultado = dbConnection.Execute(inserirDados,
-                new{
+                new
+                {
                     Id = id
                 });
                 
-                dbConnection.Close();
-
                 return tarefaResultado > 0;
             }
         }
@@ -66,8 +59,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
             
-                dbConnection.Open();
-
                 var tarefaResultado = dbConnection.Execute(inserirDados,
                 new
                 {
@@ -77,8 +68,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
                     DataCriacao = tarefa.DataCriacao,
                     StatusTarefa = tarefa.Status
                 });
-
-            dbConnection.Close();
 
             return tarefaResultado > 0;
             }
@@ -90,8 +79,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
             
-                dbConnection.Open();
-            
                 var resultado = dbConnection.QueryFirstOrDefault<Tarefa>(inserirDados,
                 new{
                     Id = id
@@ -100,36 +87,42 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
                 if (resultado != null){
                     return resultado;
                 }
-                
-                dbConnection.Close();
-                
+                                
                 return null;
             }
         }
 
-        public List<Tarefa> VisualizarTodasTarefas()
+        public PaginacaoTarefa<List<Tarefa>> VisualizarTodasTarefas(int numeroPaginaAtual, int tamanhoPagina)
         {
-            string inserirDados = "select * from [GerenciamentoTarefa].[dbo].[TAREFA]";
-            
-            List<Tarefa> listaTarefa = new List<Tarefa>();
+            int tamanhoMaxPagina = 50;
 
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
-            
-                dbConnection.Open();
-                
-                var resultado = dbConnection.Query<Tarefa>(inserirDados);
+            tamanhoPagina = (tamanhoPagina > 0 && tamanhoPagina <= tamanhoMaxPagina) ? tamanhoPagina : tamanhoMaxPagina;
 
-                dbConnection.Close();
+            int pular = (numeroPaginaAtual - 1) * tamanhoPagina;
+            int pegar = tamanhoPagina;
 
-                return resultado.ToList();
+            string query = @"SELECT COUNT(*) 
+                           FROM TAREFA
+
+                           SELECT * FROM TAREFA
+                           ORDER BY ID
+                           OFFSET @Pular ROWS FETCH NEXT @Pegar ROWS ONLY"
+            ;
+
+            using (var connection = new SqlConnection(_connectionString)){
+                var leitura = connection.QueryMultiple(query, new { Pular = pular, Pegar = pegar });
+                int count = leitura.Read<int>().FirstOrDefault();
+                List<Tarefa> todasTarefas = leitura.Read<Tarefa>().ToList();
+
+                var result = new PaginacaoTarefa<List<Tarefa>>(todasTarefas, count, numeroPaginaAtual, tamanhoPagina);
+                return result;
             }
         }
 
         public Tarefa? PesquisarTarefaTitulo(string titulo){
             string pesquisarQuery = "select * from [GerenciamentoTarefa].[dbo].[TAREFA] WHERE [TITULO] = @Titulo;";
             
-            using (IDbConnection dbConnection = new SqlConnection(_connectionString))
-            {
+            using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
                 return dbConnection.QueryFirstOrDefault<Tarefa>(pesquisarQuery, new {titulo});
             }
         }

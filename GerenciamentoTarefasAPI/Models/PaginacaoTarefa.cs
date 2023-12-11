@@ -9,20 +9,19 @@ namespace GerenciamentoTarefaAPI.Models
     {
         public int ContagemTotal { get; set; }
         public int TamanhoPagina { get; set; }
-        public int MyProperty { get; set; }
         public int NumeroPaginaAtual { get; set; }
         public int TotalPaginas { get; set; }
         public bool PaginaAnterior { get; set; }
         public bool ProximaPagina { get; set; }
         public T Data { get; set; }
 
-        public PaginacaoTarefa(int contagemTotal, T data, int numeroPaginaAtual, int tamanhoPagina){
+        public PaginacaoTarefa(T data, int contagemTotal, int numeroPaginaAtual, int tamanhoPagina){
             ContagemTotal = contagemTotal;
             Data = data;
             NumeroPaginaAtual = numeroPaginaAtual;
             TamanhoPagina = tamanhoPagina;
 
-            TotalPaginas = (int)Math.Ceiling((double)TotalPaginas / (double)TamanhoPagina);
+            TotalPaginas = (int)Math.Ceiling((double)ContagemTotal / (double)TamanhoPagina);
         
             PaginaAnterior = NumeroPaginaAtual > 1;
             ProximaPagina = NumeroPaginaAtual < TotalPaginas;
