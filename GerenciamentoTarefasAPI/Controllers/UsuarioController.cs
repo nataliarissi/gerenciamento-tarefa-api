@@ -28,7 +28,7 @@ namespace GerenciamentoTarefasAPI.Controllers
             return _usuarioRepository.ObterUsuario(id);
         }
 
-        [HttpPost]
+        [HttpPost("Autenticar")]
         public string Autenticar(string usuario, string senha)
         {
             var usuarioEncontrado = _usuarioRepository.ObterUsuarioLoginSenha(usuario, senha);
