@@ -13,6 +13,6 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
         bool EditarTarefa(Tarefa tarefa);
         bool DeletarTarefa(int id);
         PaginacaoTarefa<List<Tarefa>> VisualizarTodasTarefas(int numeroPaginaAtual, int tamanhoPagina);
-        Tarefa? PesquisarTarefaTitulo(string titulo);
+        List<Tarefa> PesquisarTarefaTitulo(string titulo);
     }
 }        

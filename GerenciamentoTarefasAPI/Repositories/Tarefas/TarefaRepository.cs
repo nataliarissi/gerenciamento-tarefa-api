@@ -119,11 +119,11 @@ namespace GerenciamentoTarefaAPI.Repositories.Tarefas
             }
         }
 
-        public Tarefa? PesquisarTarefaTitulo(string titulo){
-            string pesquisarQuery = "select * from [GerenciamentoTarefa].[dbo].[TAREFA] WHERE [TITULO] = @Titulo;";
+        public List<Tarefa> PesquisarTarefaTitulo(string titulo){
+            string pesquisarQuery = "select * from [GerenciamentoTarefa].[dbo].[TAREFA] WHERE [TITULO] LIKE @Titulo;";
             
             using (IDbConnection dbConnection = new SqlConnection(_connectionString)){
-                return dbConnection.QueryFirstOrDefault<Tarefa>(pesquisarQuery, new {titulo});
+                return dbConnection.Query<Tarefa>(pesquisarQuery, new { titulo = "%" + titulo + "%"}).ToList();
             }
         }
     }

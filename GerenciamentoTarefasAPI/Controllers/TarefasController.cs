@@ -70,7 +70,7 @@ namespace GerenciamentoTarefaAPI.Controllers
 
         [HttpGet("pesquisarTituloTarefa")]
         [Authorize]
-        public Tarefa? PesquisarTarefaTitulo(string titulo){
+        public List<Tarefa> PesquisarTarefaTitulo(string titulo){
             return _tarefaRepository.PesquisarTarefaTitulo(titulo);
         }
     }
