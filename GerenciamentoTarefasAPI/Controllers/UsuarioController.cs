@@ -17,7 +17,7 @@ namespace GerenciamentoTarefasAPI.Controllers
         }
 
         [HttpPost("cadastrarUsuario")]
-        [Authorize]
+        //[Authorize] Comentado para permitir cadastrar usuário
         public bool CadastrarUsuario([FromBody] Usuario usuario){
             return _usuarioRepository.CadastrarUsuario(usuario);
         }
